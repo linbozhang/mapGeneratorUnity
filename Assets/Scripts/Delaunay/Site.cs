@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 interface ICoord{
-	Vector2 Coord;
+	Vector2 Coord{
+		get;
+	}
 }
 public class Site :ICoord {
 	private static List<Site> _pool=new List<Site>();
@@ -15,18 +17,20 @@ public class Site :ICoord {
 	private List<Edge> _edges;
 	private List<LR> _edgeOrientations;
 	private List<Vector2> _region;
-	public static Site create( Vector2 p,int index,float weight,int color){
+	public static Site create( Vector2 p,int index,float weight,uint color){
 		if(_pool.Count>0){
-			return _pool[_pool.Count-1].init(p,index,weight,color);
+			Site rtn=_pool[_pool.Count-1].init(p,index,weight,color);
+			_pool.Remove(_pool.Count-1);
+			return rtn;
 		}else{
-			return new Site(PrivateConstrutorEnforcer,p,index,weight,color);
+			return new Site(typeof(PrivateConstrutorEnforcer),p,index,weight,color);
 		}
 	}
-	static  void sortSites(List<Site> sites){
+	public static  void sortSites(List<Site> sites){
 		sites.Sort(Site.compare);	
 	}
 	private static float compare(Site s1,Site s2){
-		int returnValue=Voronoi.compareByYThenX(s1,s2);
+		int returnValue=Voronoi.compareByYThenX (s1,s2);
 		int tempIndex;
 		if(returnValue==-1){
 			if(s1._siteIndex>s2._siteIndex){
@@ -62,16 +66,16 @@ public class Site :ICoord {
 		init(p,index,weight,color);
 	}
 	private Site init(Vector2 p,int  index,float weight,uint color){
-//		_coord=p;
-//		_siteIndex=index;
-//		this.weight=weight;
-//		this.color=color;
-//		_edges=new List<Edge>();
-//		_region=null;
-//		return this;
+		_coord=p;
+		_siteIndex=index;
+		this.weight=weight;
+		this.color=color;
+		_edges=new List<Edge>();
+		_region=null;
+		return this;
 	}
 	public string toString(){
-		return "Site"+_siteIndex+":"+coord;
+		return "Site"+_siteIndex+":"+_coord;
 	}
 	public void move(Vector2 p){
 		clear();
@@ -160,8 +164,8 @@ public class Site :ICoord {
 			LR orientation=_edgeOrientations[i];
 			points.Add(edge.clippedEnds[orientation]);
 			points.Add(edge.clippedEnds[LR.other(orientation)]);
-
-			for(int j=i+1;j<n;++j){
+			int j;
+			for(j=i+1;j<n;++j){
 				edge=_edges[j];
 				if(edge.visible==false){
 					continue;
@@ -183,7 +187,7 @@ public class Site :ICoord {
 		{
 			if(rightPoint.x!=newPoint.x&&rightPoint.y!=newPoint.y){
 				int rightCheck=BoundsCheck.check(rightPoint,bounds);
-				int newCheck=BoundCheck.check(newPoint,bounds);
+				int newCheck=BoundsCheck.check(newPoint,bounds);
 				float px,py;
 				if(rightCheck&BoundsCheck.RIGHT){
 					px=bounds.right;
@@ -212,12 +216,12 @@ public class Site :ICoord {
 					if (newCheck & BoundsCheck.RIGHT)
 					{
 						px = bounds.right;
-						points.Add(new Point(px, py));
+						points.Add(new Vector2(px, py));
 					}
 					else if (newCheck & BoundsCheck.LEFT)
 					{
 						px = bounds.left;
-						points.Add(new Point(px, py));
+						points.Add(new Vector2(px, py));
 					}
 					else if (newCheck & BoundsCheck.BOTTOM)
 					{
@@ -229,8 +233,8 @@ public class Site :ICoord {
 						{
 							px = bounds.right;
 						}
-						points.Add(new Vector(px, py));
-						points.Add(new Vector(px, bounds.bottom));
+						points.Add(new Vector2(px, py));
+						points.Add(new Vector2(px, bounds.bottom));
 					}
 				}
 				else if (rightCheck & BoundsCheck.BOTTOM)
@@ -239,12 +243,12 @@ public class Site :ICoord {
 					if (newCheck & BoundsCheck.RIGHT)
 					{
 						px = bounds.right;
-						points.Add(new Vector(px, py));
+						points.Add(new Vector2(px, py));
 					}
 					else if (newCheck & BoundsCheck.LEFT)
 					{
 						px = bounds.left;
-						points.Add(new Vector(px, py));
+						points.Add(new Vector2(px, py));
 					}
 					else if (newCheck & BoundsCheck.TOP)
 					{
@@ -256,8 +260,8 @@ public class Site :ICoord {
 						{
 							px = bounds.right;
 						}
-						points.Add(new Vector(px, py));
-						points.Add(new Vector(px, bounds.top));
+						points.Add(new Vector2(px, py));
+						points.Add(new Vector2(px, bounds.top));
 					}
 				}
 			}

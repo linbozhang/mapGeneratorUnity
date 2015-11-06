@@ -36,7 +36,7 @@ public class Edge  {
 	}
 	private static Edge create(){
 		Edge edge;
-		if (_pool.length > 0)
+		if (_pool.Count > 0)
 		{
 			edge = _pool[_pool.Count];
 			_pool.RemoveAt(_pool.Count-1);
@@ -49,18 +49,18 @@ public class Edge  {
 		return edge;
 	}
 	private static readonly Sprite LINESPRITE=new Sprite();
-	private static readonly Graphics GRAPHICS=LINESPRITE.graphics;
-	private BitmapData _delaunayLineBmp;
-	public BitmapData delaunayLineBmp{
+	private static readonly Graphics GRAPHICS=LINESPRITE.texture ;
+	private Texture2D _delaunayLineBmp;
+	public Texture2D delaunayLineBmp{
 		get{if(!_delaunayLineBmp){
 				_delaunayLineBmp=makeDelaunayLineBmp();
 			}
 			return _delaunayLineBmp;
 			}
 	}
-	public BitmapDataa makeDelaunayLineBmp(){
-		Vector2 p0=leftSite.coord;
-		Vector2 p1=rightSite.coord;
+	public Texture2D makeDelaunayLineBmp(){
+		Vector2 p0=leftSite.Coord;
+		Vector2 p1=rightSite.Coord;
 		GRAPHICS.clear();
 		GRAPHICS.lineStyle(0,0,1.0,false,LineScaleMove.NONE,CapsStyle.NONE);
 		GRAPHICS.moveTo(p0.x, p0.y);
@@ -73,12 +73,12 @@ public class Edge  {
 		if(h<1){
 			h=1;
 		}
-		BitmapData bmp =new BitmapData(w,h,true,0);
+		Texture2D bmp =new Texture2D(w,h);
 		bmp.draw(LINESPRITE);
 		return bmp;
 	}
 	public LineSegment delaunayLine(){
-		return new LineSegment(leftSite.coord,rightSite.coord);
+		return new LineSegment(leftSite.Coord,rightSite.Coord);
 	}
 	public LineSegment voronoiEdge(){
 		if(!visible) return new LineSegment(null,null);
@@ -111,7 +111,7 @@ public class Edge  {
 		return (_leftVertex==null || _rightVertex ==null);
 	}
 	public float sitesDistance(){
-		return Vector2.Distance(leftSite.coord,rightSite.coord);
+		return Vector2.Distance(leftSite.Coord,rightSite.Coord);
 	}
 	public static float compareSitesDistances_MAX(Edge edge0,Edge edge1){
 		float length0=edge0.sitesDistance();
@@ -135,11 +135,11 @@ public class Edge  {
 		get{return _clippedVertices!=null;}
 	}
 	private Dictionary<LR,Site> _site;
-	public Site leftSites{
+	public Site leftSite{
 		get{return _site[LR.LEFT];}
 		set{_site[LR.LEFT]=value;}
 	}
-	public Site rightSites{
+	public Site rightSite{
 		get{return _site[LR.RIGHT];}
 		set{_site[LR.RIGHT]=value;}
 	}

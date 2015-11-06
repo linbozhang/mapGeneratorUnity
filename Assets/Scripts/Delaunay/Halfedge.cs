@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System;
 using System.Collections.Generic;
@@ -65,7 +65,7 @@ public class Halfedge  {
 		Site topSite;
 		bool rightOfSite;bool above,fast;
 		float dxp,dyp,dxs,t1,t2,t3,y1;
-		topSite=edge.rightSites;
+		topSite=edge.rightSite;
 		rightOfSite=p.x>topSite.x;
 		if(rightOfSite && this.leftRight==LR.LEFT){
 			return true;
@@ -94,7 +94,7 @@ public class Halfedge  {
 			}
 			if (!fast)
 			{
-				dxs = topSite.x - edge.leftSites.x;
+				dxs = topSite.x - edge.leftSite.x;
 				above = edge.b * (dxp * dxp - dyp * dyp) <
 					dxs * dyp * (1.0 + 2.0 * dxp/dxs + edge.b * edge.b);
 				if (edge.b < 0.0)

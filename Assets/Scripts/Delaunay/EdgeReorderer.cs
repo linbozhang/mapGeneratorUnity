@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
@@ -40,8 +40,8 @@ public class EdgeReorderer {
 		edge=origEdges[i];
 		newEdges.Add(edge);
 		_edgeOrientations.Add(LR.LEFT);
-		ICoord firstPoint =(criterion == typeof(Vertex))?edge.leftVertex:edge.leftSites;
-		ICoord lastPoint =(criterion == typeof(Vertex))?edge.rightVertex:edge.rightSites;
+		ICoord firstPoint =(criterion == typeof(Vertex))?edge.leftVertex:edge.leftSite;
+		ICoord lastPoint =(criterion == typeof(Vertex))?edge.rightVertex:edge.rightSite;
 		if(firstPoint==Vertex.VERTEX_AT_INFINITY||lastPoint==Vertex.VERTEX_AT_INFINITY)
 		{
 			return new List<Edge>();
@@ -54,8 +54,8 @@ public class EdgeReorderer {
 					continue;
 				}
 				edge=origEdges[i];
-				ICoord leftPoint = (criterion == Vertex) ? edge.leftVertex : edge.leftSites;
-			    ICoord	rightPoint= (criterion == Vertex) ? edge.rightVertex : edge.rightSites;
+				ICoord leftPoint = (criterion == Vertex) ? edge.leftVertex : edge.leftSite;
+			    ICoord	rightPoint= (criterion == Vertex) ? edge.rightVertex : edge.rightSite;
 				if (leftPoint == Vertex.VERTEX_AT_INFINITY || rightPoint == Vertex.VERTEX_AT_INFINITY)
 				{
 					return new List<Edge>();

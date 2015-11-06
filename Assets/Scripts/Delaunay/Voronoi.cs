@@ -53,8 +53,9 @@ public class Voronoi  {
 	}
 	private void addSites(List<Vector2> points,List<uint> colors){
 		uint length=points.Count;
-		for(uint i=0;i<length;i++){
-			addSite (points[i],colors?colors[i]:0,i);
+		for(int i=0;i<length;i++){
+			uint color=colors!=null?colors[i]:0;
+			addSite (points[i],color,i);
 		}
 	}
 	private void addSite(Vector2 p,uint color ,int index){
@@ -79,7 +80,7 @@ public class Voronoi  {
 	// TODO: bug: if you call this before you call region(), something goes wrong :(
 	public List<Vector2> neighborSitesForSite(Vector2 coord)
 	{
-		Vector2 points = new List<Vector2>();
+		List<Vector2> points = new List<Vector2>();
 		Site site = _sitesIndexedByLocation[coord];
 		if (!site)
 		{
@@ -89,7 +90,7 @@ public class Voronoi  {
 		//Site neighbor;
 		foreach ( Site neighbor in sites)
 		{
-			points.add(neighbor.coord);
+			points.Add(neighbor.Coord);
 		}
 		return points;
 	}
@@ -101,27 +102,27 @@ public class Voronoi  {
 	
 	public List<LineSegment> voronoiBoundaryForSite(Vector2 coord)
 	{
-		return visibleLineSegments(selectEdgesForSitePoint(coord, _edges));
+		return Tools.Instance.visibleLineSegments(Tools.Instance.selectEdgesForSitePoint(coord, _edges));
 	}
 	
 	public List<LineSegment>  delaunayLinesForSite(Vector2 coord)
 	{
-		return delaunayLinesForEdges(selectEdgesForSitePoint(coord, _edges));
+		return DelaunayTools.delaunayLinesForEdges(Tools.Instance.selectEdgesForSitePoint(coord, _edges));
 	}
 	
 public List<LineSegment> voronoiDiagram()
 	{
-		return visibleLineSegments(_edges);
+		return Tools.Instance.visibleLineSegments(_edges);
 	}
 	
 	public List<LineSegment> delaunayTriangulation( BitmapData keepOutMask = null)
 	{
-		return delaunayLinesForEdges(selectNonIntersectingEdges(keepOutMask, _edges));
+		return DelaunayTools.delaunayLinesForEdges(Tools.Instance.selectNonIntersectingEdges(keepOutMask, _edges));
 	}
 	
 	public List<LineSegment> hull()
 	{
-		return delaunayLinesForEdges(hullEdges());
+		return DelaunayTools.delaunayLinesForEdges(hullEdges());
 	}
 	
 	private List<Edge> hullEdges()
@@ -153,7 +154,7 @@ public List<LineSegment> voronoiDiagram()
 		
 		LR orientation;
 		
-		int n = hullEdges.length;
+		int n = hullEdges.Count;
 		for (int i = 0; i < n; ++i)
 		{
 			Edge edge = hullEdges[i];
@@ -165,9 +166,9 @@ public List<LineSegment> voronoiDiagram()
 	
 	public List<LineSegment> spanningTree(string type = "minimum", BitmapData keepOutMask = null)
 	{
-		List<Edge> edges = selectNonIntersectingEdges(keepOutMask, _edges);
-		List<LineSegment> segments = delaunayLinesForEdges(edges);
-		return kruskal(segments, type);
+		List<Edge> edges = Tools.Instance.selectNonIntersectingEdges(keepOutMask, _edges);
+		List<LineSegment> segments = DelaunayTools.delaunayLinesForEdges(edges);
+		return Tools.Instance.kruskal(segments, type);
 	}
 	
 	public List<List<Vector2>> regions()
@@ -197,7 +198,21 @@ public List<LineSegment> voronoiDiagram()
 	{
 		return _sites.siteCoords();
 	}
-	
+	public static int compareByYThenX( Site s1,Site  s2)
+	{
+		if (s1.y < s2.y) return -1;
+		if (s1.y > s2.y) return 1;
+		if (s1.x < s2.x) return -1;
+		if (s1.x > s2.x) return 1;
+		return 0;
+	}
+	public static int compareByYThenX(Site s1,Vector2 s2){
+		if (s1.y < s2.y) return -1;
+		if (s1.y > s2.y) return 1;
+		if (s1.x < s2.x) return -1;
+		if (s1.x > s2.x) return 1;
+		return 0;
+	}
 	private void fortunesAlgorithm()
 	{
 		Site newSite, bottomSite, topSite, tempSite;
@@ -209,11 +224,11 @@ public List<LineSegment> voronoiDiagram()
 		
 		Rect dataBounds = _sites.getSitesBounds();
 		
-		int sqrt_nsites = int(Math.sqrt(_sites.length + 4));
+		int sqrt_nsites = (int)(Mathf.Sqrt(_sites.length + 4));
 		HalfedgePriorityQueue heap = new HalfedgePriorityQueue(dataBounds.y, dataBounds.height, sqrt_nsites);
 		EdgeList edgeList = new EdgeList(dataBounds.x, dataBounds.width, sqrt_nsites);
 		List<Halfedge> halfEdges = new List<Halfedge> ();
-		List<Vertex> vertices = new List<Vertex> ;
+		List<Vertex> vertices = new List<Vertex>();
 		
 		Site bottomMostSite = _sites.next();
 		newSite = _sites.next();
@@ -232,11 +247,11 @@ public List<LineSegment> voronoiDiagram()
 				//trace("smallest: new site " + newSite);
 				
 				// Step 8:
-				lbnd = edgeList.edgeListLeftNeighbor(newSite.coord);	// the Halfedge just to the left of newSite
+				lbnd = edgeList.edgelistLeftNeighbor(newSite.Coord);	// the Halfedge just to the left of newSite
 				//trace("lbnd: " + lbnd);
 				rbnd = lbnd.edgeListRightNeighbor;		// the Halfedge just to the right
 				//trace("rbnd: " + rbnd);
-				bottomSite = rightRegion(lbnd);		// this is the same as leftRegion(rbnd)
+				bottomSite = rightRegion(lbnd,bottomMostSite);		// this is the same as leftRegion(rbnd)
 				// this Site determines the region containing the new site
 				//trace("new Site is in region of existing site: " + bottomSite);
 				
@@ -286,8 +301,8 @@ public List<LineSegment> voronoiDiagram()
 				llbnd = lbnd.edgeListLeftNeighbor;
 				rbnd = lbnd.edgeListRightNeighbor;
 				rrbnd = rbnd.edgeListRightNeighbor;
-				bottomSite = leftRegion(lbnd);
-				topSite = rightRegion(rbnd);
+				bottomSite = leftRegion(lbnd,bottomMostSite);
+				topSite = rightRegion(rbnd,bottomMostSite);
 				// these three sites define a Delaunay triangle
 				// (not actually using these for anything...)
 				//_triangles.push(new Triangle(bottomSite, topSite, rightRegion(lbnd)));
@@ -336,51 +351,45 @@ public List<LineSegment> voronoiDiagram()
 		heap.dispose();
 		edgeList.dispose();
 		
-		foreach (Halfedge halfEdge in halfEdges)
-		{
-			halfEdge.reallyDispose();
-		}
-		halfEdges.length = 0;
+//		foreach (Halfedge halfEdge in halfEdges)
+//		{
+//			halfEdge.reallyDispose();
+//		}
+		halfEdges.Clear();// = 0;
 		
 		// we need the vertices to clip the edges
-		foreach (edge in _edges)
+		foreach (Edge edge1 in _edges)
 		{
-			edge.clipVertices(_plotBounds);
+			edge1.clipVertices(_plotBounds);
 		}
 		// but we don't actually ever use them again!
-		foreach (vertex in vertices)
-		{
-			vertex.dispose();
-		}
-		vertices.length = 0;
+//		foreach (vertex in vertices)
+//		{
+//			vertex.dispose();
+//		}
+		vertices.Clear();// = 0;
 		
-		Site leftRegion(Halfedge he)
+
+	}
+	Site leftRegion(Halfedge he,Site bottomMostSite)
+	{
+		Edge edge = he.edge;
+		if (edge == null)
 		{
-			Edge edge = he.edge;
-			if (edge == null)
-			{
-				return bottomMostSite;
-			}
-			return edge.site(he.leftRight);
+			return bottomMostSite;
 		}
-		
-		Site rightRegion(Halfedge he)
-		{
-			Edge edge = he.edge;
-			if (edge == null)
-			{
-				return bottomMostSite;
-			}
-			return edge.site(LR.other(he.leftRight));
-		}
+		return edge.site(he.leftRight);
 	}
 	
-	internal static function compareByYThenX(s1:Site, s2:*):Number
+	Site rightRegion(Halfedge he,Site bottomMostSite)
 	{
-		if (s1.y < s2.y) return -1;
-		if (s1.y > s2.y) return 1;
-		if (s1.x < s2.x) return -1;
-		if (s1.x > s2.x) return 1;
-		return 0;
+		Edge edge = he.edge;
+		if (edge == null)
+		{
+			return bottomMostSite;
+		}
+		return edge.site(LR.other(he.leftRight));
 	}
+	
+
 }

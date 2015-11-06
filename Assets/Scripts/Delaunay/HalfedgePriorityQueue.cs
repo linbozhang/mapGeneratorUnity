@@ -86,7 +86,7 @@ public class HalfedgePriorityQueue {
 	public Vector2 min(){
 		adjustMinBucket ();
 		Halfedge answer =_hash[_minBucket].nextInPriorityQueue;
-		return new Vector2(answer.vecter.x,answer.ystar);
+		return new Vector2(answer.vertex.x,answer.ystar);
 	}
 	public Halfedge extractMin(){
 		Halfedge answer;

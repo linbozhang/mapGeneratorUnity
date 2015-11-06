@@ -48,7 +48,7 @@ public class SiteList : IDisposable  {
 		{
 			return new Rect(0, 0, 0, 0);
 		}
-		xmin = float.MaxValue
+		xmin = float.MaxValue;
 		xmax = float.MinValue;
 		foreach (var site in _sites)
 		{

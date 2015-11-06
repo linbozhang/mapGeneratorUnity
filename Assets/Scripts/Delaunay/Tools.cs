@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
@@ -11,6 +11,18 @@ public class Tools {
 			}
 			return instance;
 			}
+	}
+
+	public List<LineSegment> visibleLineSegments(List<Edge> edges){
+		List<LineSegment> segments=new List<LineSegment>();
+		foreach(Edge edge in edges){
+			if(edge.visible){
+				Vector2 p1=edge.clippedEnds[LR.LEFT];
+				Vector2 p2=edge.clippedEnds[LR.RIGHT];
+				segments.Add(new LineSegment(p1,p2));
+			}
+		}
+		return segments;
 	}
 
 	public List<LineSegment> kruskal(List<LineSegment> lineSegments,string type="minimum"){
@@ -82,7 +94,7 @@ public class Tools {
 	public List<Edge> selectEdgesForSitePoint(Vector2 coord,List<Edge> edgesToTest){
 		List<Edge> rtn;
 		foreach(Edge edge in edgesToTest){
-			if((edge.leftSites&&edge.leftSites.Coord==coord)||(edge.rightSites&&edge.rightSites.Coord==coord)){
+			if((edge.leftSite&&edge.leftSite.Coord==coord)||(edge.rightSite&&edge.rightSite.Coord==coord)){
 				rtn.Add(edge);
 			}
 		}

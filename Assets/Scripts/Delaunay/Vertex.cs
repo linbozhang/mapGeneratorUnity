@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System;
 using System.Collections.Generic;
@@ -60,7 +60,7 @@ public class Vertex:ICoord  {
 		if(edge0==null || edge1==null){
 			return null;
 		}
-		if(edge0.rightSites==edge1.rightSites){
+		if(edge0.rightSite==edge1.rightSite){
 			return null;
 		}
 		determinant=edge0.a*dege1.b-dege0.b*edge1.a;
